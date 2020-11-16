@@ -1,5 +1,5 @@
 from plotter import Plotter
-
+import matplotlib.pyplot as plt
 
 def main():
     plotter = Plotter()
@@ -19,6 +19,9 @@ def main():
                 plgnx.insert(j, float(plgn[1]))  # get x coordinate lists of vertexes
                 plgny.insert(j, float(plgn[2]))  # get y coordinate lists of vertexes
                 j = j + 1
+    print(plgnx)
+    print(plgny)
+    plt.fill(plgnx, plgny, 'lightgrey')
     # print("read input.csv")
     px = []
     py = []
@@ -36,60 +39,54 @@ def main():
                 i = i + 1
     print("categorize points")
 
-    def getx_max():  # get maximum x coordinate of vertexes in polygon
-        for k in range(len(plgnx)-1):
-            if plgnx[k]>plgnx[k+1]:
-                plgnx_max=plgnx[k]
-                plgnx[k+1]=plgnx_max
-            else:
-                plgnx_max=plgnx[k+1]
-        return plgnx_max
+    lt = []
 
-    def getx_min():  # get minimum x coordinate of vertexes in polygon
-        for k in range(len(plgnx) - 1):
-            if plgnx[k] > plgnx[k + 1]:
-                plgnx_min = plgnx[k + 1]
+    def get_max(lt):  # get maximum of a list
+        for k in range(len(lt)-1):
+            if lt[k] >= lt[k + 1]:
+                lt_max = lt[k]
+                lt[k + 1] = lt_max
             else:
-                plgnx_min = plgnx[k]
-                plgnx[k + 1] = plgnx_min
-        return plgnx_min
+                lt_max = lt[k + 1]
+        return lt_max
 
-    def gety_max():  # get maximum y coordinate of vertexes in polygon
-        for k in range(len(plgny)-1):
-            if plgny[k]>plgny[k+1]:
-                plgny_max=plgny[k]
-                plgny[k+1]=plgny_max
+    def get_min(lt):  # get minimum  of a list
+        for t in range(len(lt)-1):
+            if lt[t] <= lt[t + 1]:
+                lt[t+1]=lt[t]
+                lt_min = lt[t+1]
             else:
-                plgny_max=plgny[k+1]
-        return plgny_max
+                lt_min = lt[t+1]
+        # print(plgnx_min)
+        return lt_min
 
-    def gety_min():  # get minimum y coordinate of vertexes in polygon
-        for k in range(len(plgny) - 1):
-            if plgny[k]>plgny[k+1]:
-                plgny_min=plgny[k+1]
-            else:
-                plgny_min=plgny[k]
-                plgny[k + 1] = plgny_min
-        return plgny_min
-
-    def mbr_1(p,pn_max,pn_min):  # MBR execute
-        if p>pn_max or p<pn_min:
+    def mbr_1(p, pn_max, pn_min):  # MBR execute
+        if p > pn_max or p < pn_min:
             return 'outside'
         else:
             return 'inside'
 
-    print('''Do you want to use which algorithem to judge PIP?
+    print('''Do you want to use which algorithm to judge PIP?
        if MBR,input the number :1
        if RCA,input the number :2''')  # start
     n_input = int(input('The number you put:'))
+    l = 0
+    x_max = get_max(plgnx)  # get maximum x coordinate of vertexes in polygon
+    x_min = get_min(plgnx)  # get minimum x coordinate of vertexes in polygon
+    y_max = get_max(plgny)  # get maximum y coordinate of vertexes in polygon
+    y_min = get_min(plgny)  # get minimum y coordinate of vertexes in polygon
+    plt.plot([x_max,x_max,x_min,x_min,x_max],[y_max,y_min,y_min,y_max,y_max])
     if n_input == 1:
         for l in range(len(px)):
-            res1 = mbr_1(px[l], getx_max(), gety_min())
-            plotter.add_point(px[l], py[l], res1)  # add points by x coordinate to the plotter
-            res2 = mbr_1(py[l], gety_max(), gety_min())
-            plotter.add_point(px[l], py[l], res2)  # add points by y coordinate to the plotter
-        for m in range(len(plgnx)):
-            plotter.add_polygon(plgnx, plgny)
+            res1 = mbr_1(px[l], x_max, x_min)
+            res2 = mbr_1(py[l], y_max, y_min)
+            if res1 == res2 and res1 == 'inside':
+                plotter.add_point(px[l], py[l], 'inside')  # add points by x coordinate to the plotter
+            else:
+                plotter.add_point(px[l], py[l], 'outside')  # add points by y coordinate to the plotter
+        plotter.add_polygon(plgnx, plgny)
+        plt.fill(plgnx, plgny,'lightgrey')
+
     # elif n_input==2:
     else:
         print('The number that you have input is worry.please input again after reading carefully!')
@@ -100,3 +97,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
